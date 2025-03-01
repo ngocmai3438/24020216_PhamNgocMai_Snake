@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
    
     while (running) {
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT) running = false;
+            if (event.type == SDL_QUIT || snake.gameOver()) running = false;
         }
 
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
@@ -44,20 +44,6 @@ int main(int argc, char* argv[]) {
         graphic.presentScene();
         SDL_Delay(100);
     }
-
-    /*if (SDL_GetTicks() - lastMove > 100) {
-        snake.move();
-        lastMove = SDL_GetTicks();
-
-        if (snake.body.front().x == food.x && snake.body.front().y == food.y) {
-            snake.grow();
-            food.x = rand() % (SCREEN_WIDTH / CELL_SIZE) * CELL_SIZE;
-            food.y = rand() % (SCREEN_HEIGHT / CELL_SIZE) * CELL_SIZE;
-        }
-
-        if (snake.checkCollision()) running = false;
-    }*/
-
   
 
     graphic.quit();

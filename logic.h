@@ -76,7 +76,16 @@ struct Snake {
         return overlap(newHead, food);
     }
 
-    void gameOver() {}
+    bool gameOver() {
+        bool rel = false;
+        SDL_Rect newHead = body.front();
+        newHead.x += dx * CELL_SIZE;
+        newHead.y += dy * CELL_SIZE;
+        for (size_t i = 1; i < body.size(); i++) {
+            if ( SDL_HasIntersection(&newHead, &body[i])) rel = true;
+        }
+        return rel;
+    }
 
     /*bool checkCollision() {
         SDL_Rect head = body.front();
