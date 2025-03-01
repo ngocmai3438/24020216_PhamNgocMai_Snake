@@ -7,6 +7,10 @@
 #include "defs.h"
 
 using namespace std;
+
+bool overlap(const SDL_Rect& r1, const SDL_Rect& r2) {
+    return SDL_HasIntersection(&r1, &r2);
+}
 struct Snake {
     vector <SDL_Rect> body;
     SDL_Rect head;
@@ -16,6 +20,7 @@ struct Snake {
     Snake() {
         body.push_back({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, CELL_SIZE, CELL_SIZE });
         head = body.front();
+        body.push_back(head);
         dx = speed;
         dy = 0;
     }
@@ -65,6 +70,14 @@ struct Snake {
             dx = 0;
         }
     }
+    
+    bool eatFood(SDL_Rect food) {
+        SDL_Rect newHead = body.front();
+        return overlap(newHead, food);
+    }
+
+    void gameOver() {}
+
     /*bool checkCollision() {
         SDL_Rect head = body.front();
         if (head.x < 0 || head.x >= SCREEN_WIDTH || head.y < 0 || head.y >= SCREEN_HEIGHT)

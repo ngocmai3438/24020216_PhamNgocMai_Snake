@@ -13,10 +13,13 @@ int main(int argc, char* argv[]) {
     graphic.initSDL();
 
     Snake snake;
+    SDL_Rect food;
+    spawnFood(food);
+
     bool running = true;
     SDL_Event event;
     
-
+   
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
@@ -30,8 +33,15 @@ int main(int argc, char* argv[]) {
         if (currentKeyStates[SDL_SCANCODE_RIGHT]) snake.turnEast();
 
         snake.move();
-        render(snake, graphic);
+        
+        if (snake.eatFood(food)) {
+            snake.grow();
+            spawnFood(food);
+        }
 
+        render(snake, food, graphic);
+
+        graphic.presentScene();
         SDL_Delay(100);
     }
 
@@ -48,9 +58,7 @@ int main(int argc, char* argv[]) {
         if (snake.checkCollision()) running = false;
     }*/
 
-    graphic.prepareScene();
-
-    graphic.presentScene();
+  
 
     graphic.quit();
     return 0;

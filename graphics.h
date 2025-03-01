@@ -89,24 +89,27 @@ struct Graphics {
 	}
 };
 
-//vẽ snake
-void render(const Snake& snake, const Graphics& graphics) {
+//Vẽ snake
+void render(const Snake& snake,const SDL_Rect& food, const Graphics& graphics) {
 	// Đặt màu nền đen
 	SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
 	SDL_RenderClear(graphics.renderer);
-
-	// Vẽ food (màu đỏ)
+	// Vẽ thức ăn (màu đỏ)
 	SDL_SetRenderDrawColor(graphics.renderer, 255, 0, 0, 255);
 	SDL_RenderFillRect(graphics.renderer, &food);
-
 	// Vẽ từng đoạn của Snake (màu xanh lá)
 	SDL_SetRenderDrawColor(graphics.renderer, 0, 255, 0, 255);
 	for (const SDL_Rect& segment : snake.body) {
 		SDL_RenderFillRect(graphics.renderer, &segment);
 	}
-
-	// Cập nhật màn hình
-	SDL_RenderPresent(graphics.renderer);
 }
+//Tạo food
+void spawnFood(SDL_Rect& food) {
+	food.x = (rand() % (SCREEN_WIDTH / CELL_SIZE)) * CELL_SIZE;
+	food.y = (rand() % (SCREEN_HEIGHT / CELL_SIZE)) * CELL_SIZE;
+	food.w = CELL_SIZE;
+	food.h = CELL_SIZE;
+}
+
 
 #endif
