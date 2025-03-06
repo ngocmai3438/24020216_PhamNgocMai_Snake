@@ -12,6 +12,8 @@ int main(int argc, char* argv[]) {
     Graphics graphic;
     graphic.initSDL();
 
+    SDL_Texture* background = graphic.loadTexture("background.jpg");
+
     Snake snake;
     SDL_Rect food;
     spawnFood(food);
@@ -21,9 +23,12 @@ int main(int argc, char* argv[]) {
     
    
     while (running) {
+      
+
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT || snake.gameOver()) running = false;
         }
+
 
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
@@ -39,13 +44,14 @@ int main(int argc, char* argv[]) {
             spawnFood(food);
         }
 
-        render(snake, food, graphic);
+        render(background, snake, food, graphic);
 
+        
         graphic.presentScene();
         SDL_Delay(100);
     }
   
-
+    SDL_DestroyTexture(background);
     graphic.quit();
     return 0;
 }

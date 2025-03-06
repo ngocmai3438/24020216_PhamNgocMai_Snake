@@ -8,7 +8,7 @@
 struct Graphics {
 	SDL_Renderer* renderer;
 	SDL_Window* window;
-
+	
 	//các hàm khác
 
 	//Ghi lỗi và thoát chương trình
@@ -83,22 +83,23 @@ struct Graphics {
 		
 		IMG_Quit();
 
+		
 		SDL_DestroyRenderer(renderer);
 		SDL_DestroyWindow(window);
 		SDL_Quit();
 	}
+	
 };
 
 //Vẽ snake
-void render(const Snake& snake,const SDL_Rect& food, const Graphics& graphics) {
-	// Đặt màu nền đen
-	SDL_SetRenderDrawColor(graphics.renderer, 0, 0, 0, 255);
-	SDL_RenderClear(graphics.renderer);
+void render( SDL_Texture* background, const Snake& snake,const SDL_Rect& food, Graphics& graphics) {
+	// Đặt màu nền
+	graphics.prepareScene(background);
 	// Vẽ thức ăn (màu đỏ)
 	SDL_SetRenderDrawColor(graphics.renderer, 255, 0, 0, 255);
 	SDL_RenderFillRect(graphics.renderer, &food);
 	// Vẽ từng đoạn của Snake (màu xanh lá)
-	SDL_SetRenderDrawColor(graphics.renderer, 0, 255, 0, 255);
+	SDL_SetRenderDrawColor(graphics.renderer, 0, 100, 0, 255);
 	for (const SDL_Rect& segment : snake.body) {
 		SDL_RenderFillRect(graphics.renderer, &segment);
 	}
