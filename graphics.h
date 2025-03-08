@@ -82,22 +82,23 @@ struct Graphics {
 		//(để SDL_image hoạt động hiệu quả)
 		
 		IMG_Quit();
-
-		
-		SDL_DestroyRenderer(renderer);
+        SDL_DestroyRenderer(renderer);
+		renderer = nullptr;
 		SDL_DestroyWindow(window);
+		window = nullptr;
 		SDL_Quit();
 	}
 	
 };
 
 //Vẽ snake
-void render( SDL_Texture* background, const Snake& snake,const SDL_Rect& food, Graphics& graphics) {
+void render(SDL_Texture* background, const Snake& snake, const SDL_Rect& food, SDL_Texture* cherry, Graphics& graphics) {
 	// Đặt màu nền
 	graphics.prepareScene(background);
 	// Vẽ thức ăn (màu đỏ)
-	SDL_SetRenderDrawColor(graphics.renderer, 255, 0, 0, 255);
-	SDL_RenderFillRect(graphics.renderer, &food);
+	/*SDL_SetRenderDrawColor(graphics.renderer, 255, 0, 0, 255);t
+	SDL_RenderFillRect(graphics.renderer, &food);*/
+	SDL_RenderCopy(graphics.renderer, cherry, nullptr, &food);
 	// Vẽ từng đoạn của Snake (màu xanh lá)
 	SDL_SetRenderDrawColor(graphics.renderer, 0, 100, 0, 255);
 	for (const SDL_Rect& segment : snake.body) {
@@ -107,10 +108,11 @@ void render( SDL_Texture* background, const Snake& snake,const SDL_Rect& food, G
 //Tạo food
 void spawnFood(SDL_Rect& food) {
 	food.x = (rand() % (SCREEN_WIDTH / CELL_SIZE)) * CELL_SIZE;
-	food.y = (rand() % (SCREEN_HEIGHT / CELL_SIZE)) * CELL_SIZE;
-	food.w = CELL_SIZE;
-	food.h = CELL_SIZE;
+    food.y = (rand() % (SCREEN_HEIGHT / CELL_SIZE)) * CELL_SIZE;
+	food.w = CELL_SIZE; // Đặt chiều rộng
+	food.h = CELL_SIZE;  // Đặt chiều cao
 }
+
 
 
 #endif

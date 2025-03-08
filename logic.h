@@ -29,7 +29,7 @@ struct Snake {
         SDL_Rect newSegment = body.back();
         body.push_back(newSegment);
     }
-    
+
     void move() {
         // Tạo một bản sao của phần tử đầu tiên (đầu rắn)
         SDL_Rect newHead = body.front();
@@ -45,32 +45,32 @@ struct Snake {
         body.pop_back();
     }
 
-    void turnEast(){
+    void turnEast() {
         if (dx == 0) {
             dx = speed;
             dy = 0;
         }
     }
-    void turnWest(){
+    void turnWest() {
         if (dx == 0) {
             dx = -speed;
             dy = 0;
         }
     }
-    void turnNorth(){
+    void turnNorth() {
         if (dy == 0) {
             dy = -speed;
             dx = 0;
         }
     }
 
-    void turnSouth(){
+    void turnSouth() {
         if (dy == 0) {
             dy = speed;
             dx = 0;
         }
     }
-    
+
     bool eatFood(SDL_Rect food) {
         SDL_Rect newHead = body.front();
         return overlap(newHead, food);
@@ -82,7 +82,7 @@ struct Snake {
         newHead.x += dx * CELL_SIZE;
         newHead.y += dy * CELL_SIZE;
         for (size_t i = 1; i < body.size(); i++) {
-            if ( SDL_HasIntersection(&newHead, &body[i])) rel = true;
+            if (SDL_HasIntersection(&newHead, &body[i])) rel = true;
         }
         return rel;
     }
@@ -101,4 +101,3 @@ struct Snake {
 
 
 #endif
-

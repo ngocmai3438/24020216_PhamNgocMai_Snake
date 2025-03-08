@@ -16,14 +16,15 @@ int main(int argc, char* argv[]) {
 
     Snake snake;
     SDL_Rect food;
+    SDL_Texture* cherry = graphic.loadTexture("apple.png");
     spawnFood(food);
 
     bool running = true;
     SDL_Event event;
-    
-   
+
+
     while (running) {
-      
+
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT || snake.gameOver()) running = false;
@@ -38,20 +39,21 @@ int main(int argc, char* argv[]) {
         if (currentKeyStates[SDL_SCANCODE_RIGHT]) snake.turnEast();
 
         snake.move();
-        
+
         if (snake.eatFood(food)) {
             snake.grow();
             spawnFood(food);
         }
 
-        render(background, snake, food, graphic);
+        render(background, snake, food,cherry, graphic);
 
-        
+
         graphic.presentScene();
         SDL_Delay(100);
     }
-  
+
     SDL_DestroyTexture(background);
+    SDL_DestroyTexture(cherry);
     graphic.quit();
     return 0;
 }
