@@ -113,7 +113,7 @@ struct Snake {
         SDL_Rect newHead = body.front();
         newHead.x += dx * CELL_SIZE;
         newHead.y += dy * CELL_SIZE;
-        for (size_t i = 1; i < body.size(); i++) {
+        for (size_t i = 0; i < body.size(); i++) {
             if (SDL_HasIntersection(&newHead, &body[i])) rel = true;
         }
         return rel;
@@ -129,6 +129,18 @@ struct Snake {
         }
         return false;
     }*/
+
+    //Xác định hướng của đuôi rắn
+    string tailDirection() const {
+        if (body.size() < 2) return "Unknown";
+        SDL_Rect tail = body.back();
+        SDL_Rect pretail = body[body.size() - 2];
+        if (tail.x == pretail.x && tail.y < pretail.y) return "South";
+        if (tail.x == pretail.x && tail.y > pretail.y) return "North";
+        if (tail.x > pretail.x && tail.y == pretail.y) return "West";
+        if (tail.x < pretail.x && tail.y == pretail.y) return "East";
+        return "Unknown";
+    }
 };
 
 

@@ -21,7 +21,11 @@ int main(int argc, char* argv[]) {
     snake.headTurnEast = graphic.loadTexture("headEast.png");
 
     snake.bodyImage = graphic.loadTexture("bodyImage.png");
-    //snake.tail_image = graphic.loadTexture("tail_left");
+
+    snake.tailTurnNorth = graphic.loadTexture("tailNorth.png");
+    snake.tailTurnSouth = graphic.loadTexture("tailSouth.png");
+    snake.tailTurnWest = graphic.loadTexture("tailWest.png");
+    snake.tailTurnEast = graphic.loadTexture("tailEast.png");
 
     SDL_Rect food;
     SDL_Texture* cherry = graphic.loadTexture("apple.png");
@@ -67,7 +71,14 @@ int main(int argc, char* argv[]) {
     SDL_DestroyTexture(snake.headTurnSouth);
     SDL_DestroyTexture(snake.headTurnEast);
     SDL_DestroyTexture(snake.headTurnWest);
+
     SDL_DestroyTexture(snake.bodyImage);
+
+    SDL_DestroyTexture(snake.tailTurnNorth);
+    SDL_DestroyTexture(snake.tailTurnSouth);
+    SDL_DestroyTexture(snake.tailTurnWest);
+    SDL_DestroyTexture(snake.tailTurnEast);
+
     graphic.quit();
     return 0;
 }

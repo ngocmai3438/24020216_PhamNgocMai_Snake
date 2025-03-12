@@ -97,6 +97,7 @@ void render(SDL_Texture* background, const Snake& snake, const SDL_Rect& food, S
 	graphics.prepareScene(background);
 	// Vẽ thức ăn (màu đỏ)
 	SDL_RenderCopy(graphics.renderer, cherry, nullptr, &food);
+
 	// Vẽ từng đoạn của Snake (màu xanh lá)
 	/*SDL_SetRenderDrawColor(graphics.renderer, 0, 100, 0, 255);
 	for (const SDL_Rect& segment : snake.body) {
@@ -115,8 +116,22 @@ void render(SDL_Texture* background, const Snake& snake, const SDL_Rect& food, S
 	if (snake.check_turnWest()) {
 		SDL_RenderCopy(graphics.renderer, snake.headTurnWest, nullptr, &snake.body[0]);
 	}
-	for (int i = 1; i < s; i++) {
+	for (int i = 1; i < s-1; i++) {
 		SDL_RenderCopy(graphics.renderer, snake.bodyImage, nullptr, &snake.body[i]);
+	}
+
+	//Vẽ đuôi rắn
+	if (snake.tailDirection() == "North") {
+		SDL_RenderCopy(graphics.renderer, snake.tailTurnNorth, nullptr, &snake.body.back());
+	}
+	if (snake.tailDirection() == "South") {
+		SDL_RenderCopy(graphics.renderer, snake.tailTurnSouth, nullptr, &snake.body.back());
+	}
+	if (snake.tailDirection() == "East") {
+		SDL_RenderCopy(graphics.renderer, snake.tailTurnEast, nullptr, &snake.body.back());
+	}
+	if (snake.tailDirection() == "West") {
+		SDL_RenderCopy(graphics.renderer, snake.tailTurnWest, nullptr, &snake.body.back());
 	}
 }
 //Tạo food
