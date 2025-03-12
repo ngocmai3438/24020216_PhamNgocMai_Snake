@@ -15,8 +15,17 @@ int main(int argc, char* argv[]) {
     SDL_Texture* background = graphic.loadTexture("background.jpg");
 
     Snake snake;
+    snake.headTurnNorth = graphic.loadTexture("headNorth.png");
+    snake.headTurnSouth = graphic.loadTexture("headSouth.png");
+    snake.headTurnWest = graphic.loadTexture("headWest.png");
+    snake.headTurnEast = graphic.loadTexture("headEast.png");
+
+    snake.bodyImage = graphic.loadTexture("bodyImage.png");
+    //snake.tail_image = graphic.loadTexture("tail_left");
+
     SDL_Rect food;
     SDL_Texture* cherry = graphic.loadTexture("apple.png");
+
     spawnFood(food);
 
     bool running = true;
@@ -49,11 +58,16 @@ int main(int argc, char* argv[]) {
 
 
         graphic.presentScene();
-        SDL_Delay(100);
+        SDL_Delay(200);
     }
 
     SDL_DestroyTexture(background);
     SDL_DestroyTexture(cherry);
+    SDL_DestroyTexture(snake.headTurnNorth);
+    SDL_DestroyTexture(snake.headTurnSouth);
+    SDL_DestroyTexture(snake.headTurnEast);
+    SDL_DestroyTexture(snake.headTurnWest);
+    SDL_DestroyTexture(snake.bodyImage);
     graphic.quit();
     return 0;
 }

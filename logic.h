@@ -15,12 +15,29 @@ struct Snake {
     vector <SDL_Rect> body;
     SDL_Rect head;
     int dx, dy;
+    //Vector lưu hướng của đuôi rắn
+    vector <int> segDirection; // 0_turnEast; 1_turnSouth; 2_turnWest; 3_turnNorth;
+    // Ảnh
+    SDL_Texture* headTurnEast;
+    SDL_Texture* headTurnWest;
+    SDL_Texture* headTurnSouth;
+    SDL_Texture* headTurnNorth;
+    SDL_Texture* bodyImage;
+    SDL_Texture* tailTurnEast;
+    SDL_Texture* tailTurnWest;
+    SDL_Texture* tailTurnSouth;
+    SDL_Texture* tailTurnNorth;
+
+
+
     int speed = INITIAL_SPEED;
 
     Snake() {
         body.push_back({ SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, CELL_SIZE, CELL_SIZE });
         head = body.front();
         body.push_back(head);
+
+        segDirection.resize(2,0);
         dx = speed;
         dy = 0;
     }
@@ -28,6 +45,7 @@ struct Snake {
     void grow() {
         SDL_Rect newSegment = body.back();
         body.push_back(newSegment);
+        segDirection.push_back(segDirection.back());
     }
 
     void move() {
@@ -51,11 +69,19 @@ struct Snake {
             dy = 0;
         }
     }
+    bool check_turnEast() const {
+        if (dx == speed && dy == 0) return true;
+        else return false;
+    }
     void turnWest() {
         if (dx == 0) {
             dx = -speed;
             dy = 0;
         }
+    }
+    bool check_turnWest() const {
+        if (dx == -speed && dy == 0) return true;
+        else return false;
     }
     void turnNorth() {
         if (dy == 0) {
@@ -63,14 +89,20 @@ struct Snake {
             dx = 0;
         }
     }
-
+    bool check_turnNorth() const {
+        if (dy == -speed && dx == 0) return true;
+        else return false;
+    }
     void turnSouth() {
         if (dy == 0) {
             dy = speed;
             dx = 0;
         }
     }
-
+    bool check_turnSouth() const {
+        if (dy == speed && dx == 0) return true;
+        else return false;
+    }
     bool eatFood(SDL_Rect food) {
         SDL_Rect newHead = body.front();
         return overlap(newHead, food);
