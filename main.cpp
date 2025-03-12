@@ -40,10 +40,10 @@ int main(int argc, char* argv[]) {
 
 
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_QUIT || snake.gameOver()) running = false;
+            if (event.type == SDL_QUIT) running = false;
         }
 
-
+        if (snake.gameOver()) running = false;
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
         if (currentKeyStates[SDL_SCANCODE_UP]) snake.turnNorth();
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
 
         graphic.presentScene();
-        SDL_Delay(200);
+        SDL_Delay(150);
     }
 
     SDL_DestroyTexture(background);

@@ -15,8 +15,6 @@ struct Snake {
     vector <SDL_Rect> body;
     SDL_Rect head;
     int dx, dy;
-    //Vector lưu hướng của đuôi rắn
-    vector <int> segDirection; // 0_turnEast; 1_turnSouth; 2_turnWest; 3_turnNorth;
     // Ảnh
     SDL_Texture* headTurnEast;
     SDL_Texture* headTurnWest;
@@ -37,7 +35,7 @@ struct Snake {
         head = body.front();
         body.push_back(head);
 
-        segDirection.resize(2,0);
+       
         dx = speed;
         dy = 0;
     }
@@ -45,7 +43,7 @@ struct Snake {
     void grow() {
         SDL_Rect newSegment = body.back();
         body.push_back(newSegment);
-        segDirection.push_back(segDirection.back());
+       
     }
 
     void move() {
@@ -57,7 +55,8 @@ struct Snake {
         newHead.x = ((newHead.x % SCREEN_WIDTH) + SCREEN_WIDTH) % SCREEN_WIDTH;
         newHead.y = ((newHead.y % SCREEN_HEIGHT) + SCREEN_HEIGHT) % SCREEN_HEIGHT;
 
-
+        //Kiểm tra va chạm trước khi cập nhật vị trí
+        if (gameOver()) exit(0);
         // Chèn newHead vào đầu danh sách, loại bỏ phần tử cuối cùng
         body.insert(body.begin(), newHead);
         body.pop_back();
@@ -113,10 +112,11 @@ struct Snake {
         SDL_Rect newHead = body.front();
         newHead.x += dx * CELL_SIZE;
         newHead.y += dy * CELL_SIZE;
-        for (size_t i = 0; i < body.size(); i++) {
+        for (size_t i = 1; i < body.size(); i++) {
             if (SDL_HasIntersection(&newHead, &body[i])) rel = true;
         }
         return rel;
+        
     }
 
     /*bool checkCollision() {
