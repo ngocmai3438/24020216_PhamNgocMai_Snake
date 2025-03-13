@@ -42,6 +42,10 @@ struct Snake {
 
     void grow() {
         SDL_Rect newSegment = body.back();
+        if (tailDirection() == "East") newSegment.x -= CELL_SIZE; // Rắn đi phải, đuôi thêm vào bên trái
+        else if (tailDirection() == "West") newSegment.x += CELL_SIZE; // Rắn đi trái, đuôi thêm vào bên phải
+        else if (tailDirection() == "South") newSegment.y -= CELL_SIZE; // Rắn đi xuống, đuôi thêm vào trên
+        else if (tailDirection() == "North") newSegment.y += CELL_SIZE; // Rắn đi lên, đuôi thêm vào dưới
         body.push_back(newSegment);
        
     }

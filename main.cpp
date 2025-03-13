@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
             spawnFood(food);
         }
 
-        render(background, snake, food,cherry, graphic);
+        render(background, snake, food, cherry, graphic);
 
 
         graphic.presentScene();
