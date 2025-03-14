@@ -1,18 +1,53 @@
-#include <iostream>
+﻿#include <iostream>
 #include <SDL.h>
 #include <vector>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include "defs.h"
 #include "logic.h"
 #include "graphics.h"
 
 using namespace std;
 
+void waitUntilKeyPressed()
+{
+    SDL_Event e;
+    while (true) {
+        if (SDL_PollEvent(&e) != 0 && (e.type == SDL_KEYDOWN || e.type == SDL_QUIT))
+            return;
+        SDL_Delay(200);
+    }
+}
+
 int main(int argc, char* argv[]) {
+    
     Graphics graphic;
     graphic.initSDL();
 
+    //Mở đầu
     SDL_Texture* background = graphic.loadTexture("background.jpg");
+    graphic.prepareScene(background);
+
+    TTF_Font* font70 = graphic.loadFont("Game Paused DEMO.otf", 70);
+    SDL_Color colorName = { 204,0,0,0 };
+    SDL_Texture* name = graphic.renderText("SNAKE", font70, colorName);
+    graphic.renderTexture(name, 200, 170);
+    //Enter Speed
+    TTF_Font* font30 = graphic.loadFont("Game Paused DEMO.otf", 30);
+    SDL_Color colorSpeed = { 153,0,0 };
+    SDL_Texture* chooseSpeed = graphic.renderText("Choose snake speed", font30, colorSpeed);
+    graphic.renderTexture(chooseSpeed, 160, 250);
+    
+    TTF_Font* font20 = graphic.loadFont("Game Paused DEMO.otf", 20);
+    SDL_Color color = { 204,204,0 };
+    SDL_Texture* slow = graphic.renderText("slow", font20, color);
+    SDL_Texture* fast = graphic.renderText("fast", font20, color);
+    graphic.renderButton(160, 300, slow);
+    graphic.renderButton(320, 300, fast);
+    graphic.presentScene();
+
+    waitUntilKeyPressed();
+
 
     Snake snake;
     snake.headTurnNorth = graphic.loadTexture("headNorth.png");
@@ -62,22 +97,18 @@ int main(int argc, char* argv[]) {
 
 
         graphic.presentScene();
-        SDL_Delay(150);
+        SDL_Delay(200);
     }
 
-    SDL_DestroyTexture(background);
-    SDL_DestroyTexture(cherry);
-    SDL_DestroyTexture(snake.headTurnNorth);
-    SDL_DestroyTexture(snake.headTurnSouth);
-    SDL_DestroyTexture(snake.headTurnEast);
-    SDL_DestroyTexture(snake.headTurnWest);
+    SDL_DestroyTexture(background); background = nullptr;
+    SDL_DestroyTexture(cherry); cherry = nullptr;
 
-    SDL_DestroyTexture(snake.bodyImage);
+    snake.quitTexture();
 
-    SDL_DestroyTexture(snake.tailTurnNorth);
-    SDL_DestroyTexture(snake.tailTurnSouth);
-    SDL_DestroyTexture(snake.tailTurnWest);
-    SDL_DestroyTexture(snake.tailTurnEast);
+
+    graphic.quitText(name, font70);
+    graphic.quitText(slow, font20);
+    graphic.quitText(fast, font20);
 
     graphic.quit();
     return 0;

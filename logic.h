@@ -145,6 +145,20 @@ struct Snake {
         if (tail.x < pretail.x && tail.y == pretail.y) return "East";
         return "Unknown";
     }
+    void quitTexture() {
+        
+        SDL_DestroyTexture(headTurnNorth); headTurnNorth = nullptr;
+        SDL_DestroyTexture(headTurnSouth); headTurnSouth = nullptr;
+        SDL_DestroyTexture(headTurnEast); headTurnEast = nullptr;
+        SDL_DestroyTexture(headTurnWest); headTurnWest = nullptr;
+
+        SDL_DestroyTexture(bodyImage); bodyImage = nullptr;
+
+        SDL_DestroyTexture(tailTurnNorth); tailTurnNorth = nullptr;
+        SDL_DestroyTexture(tailTurnSouth); tailTurnSouth = nullptr;
+        SDL_DestroyTexture(tailTurnWest); tailTurnWest = nullptr;
+        SDL_DestroyTexture(tailTurnEast); tailTurnEast = nullptr;
+    }
 };
 
 

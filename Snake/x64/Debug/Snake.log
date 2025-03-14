@@ -1,5 +1,11 @@
 ﻿  main.cpp
-D:\GameSDL\Snake\graphics.h(106,8): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+D:\GameSDL\Snake\graphics.h(136,47): warning C4305: 'argument': truncation from 'int' to 'Uint8'
+  (compiling source file 'main.cpp')
+  
+D:\GameSDL\Snake\graphics.h(136,47): warning C4309: 'argument': truncation of constant value
+  (compiling source file 'main.cpp')
+  
+D:\GameSDL\Snake\graphics.h(152,8): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
   (compiling source file 'main.cpp')
   
   Snake.vcxproj -> D:\GameSDL\Snake\x64\Debug\Snake.exe
