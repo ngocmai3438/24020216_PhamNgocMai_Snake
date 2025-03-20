@@ -127,19 +127,33 @@ struct Graphics {
 		TTF_CloseFont(font);
 		text = NULL;
 	}
-	void renderButton(int x, int y, SDL_Texture* line ) {
-		SDL_Rect rect;
-		rect.x = x;
-		rect.y = y;
-		rect.w = 100;
-		rect.h = 40;
+	void renderButton(int x, int y, Button& button) {
+		// Lấy kích thước chữ từ texture
+		int textW, textH;
+		SDL_QueryTexture(button.line, NULL, NULL, &textW, &textH);
+		// Tạo button có kích thước phù hợp với chữ
+		button.rect.x = x;
+		button.rect.y = y;
+		button.rect.w = textW + 20; // Thêm padding ngang
+		button.rect.h = textH + 10; // Thêm padding dọc
+		
 		SDL_SetRenderDrawColor(renderer, 64,64, 64, 256);
-		SDL_RenderFillRect(renderer, &rect);
+		SDL_RenderFillRect(renderer, &button.rect);
 
-		SDL_RenderCopy(renderer, line, nullptr, &rect);
+		SDL_RenderCopy(renderer, button.line, nullptr, &button.rect);
+		
+
 	}
 };
-
+//button
+bool buttonClicked(int mouseX, int mouseY, Button& button) {
+	
+	if (mouseX >= button.rect.x && mouseX <= button.rect.x + button.rect.w &&
+		mouseY >= button.rect.y && mouseY <= button.rect.y + button.rect.h) {
+		return true;
+	}
+	return false;
+}
 //Vẽ snake
 void render(SDL_Texture* background, const Snake& snake, const SDL_Rect& food, SDL_Texture* cherry, Graphics& graphics) {
 	// Đặt màu nền

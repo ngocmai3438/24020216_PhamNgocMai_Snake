@@ -161,5 +161,15 @@ struct Snake {
     }
 };
 
+struct Button {
+    SDL_Texture* line; //dòng chữ
+    SDL_Rect rect; //vị trí button
+    Button() {
+        rect.x = 0;
+        rect.y = 0;
+        rect.w = 0;
+        rect.h = 0;
 
+    }
+};
 #endif

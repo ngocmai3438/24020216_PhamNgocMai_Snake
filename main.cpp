@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
     
     Graphics graphic;
     graphic.initSDL();
+    int speed;
 
     //Mở đầu
     SDL_Texture* background = graphic.loadTexture("background.jpg");
@@ -38,16 +39,49 @@ int main(int argc, char* argv[]) {
     SDL_Texture* chooseSpeed = graphic.renderText("Choose snake speed", font30, colorSpeed);
     graphic.renderTexture(chooseSpeed, 160, 250);
     
+    Button slow, medium, fast;
     TTF_Font* font20 = graphic.loadFont("Game Paused DEMO.otf", 20);
     SDL_Color color = { 204,204,0 };
-    SDL_Texture* slow = graphic.renderText("slow", font20, color);
-    SDL_Texture* fast = graphic.renderText("fast", font20, color);
-    graphic.renderButton(160, 300, slow);
-    graphic.renderButton(320, 300, fast);
+    slow.line = graphic.renderText("slow", font20, color);
+    medium.line = graphic.renderText("medium", font20, color);
+    fast.line = graphic.renderText("fast", font20, color);
+    graphic.renderButton(110, 300, slow);
+    graphic.renderButton(260, 300, medium);
+    graphic.renderButton(420, 300, fast);
     graphic.presentScene();
 
-    waitUntilKeyPressed();
+    bool firstFrame = true;
+    SDL_Event firstEvent;
+    int x, y;
+    while (firstFrame) {
+        SDL_WaitEvent(&firstEvent);
+        
+        switch (firstEvent.type) {
+        case SDL_QUIT:
+            exit(0);
+        case SDL_MOUSEBUTTONDOWN:
+            SDL_GetMouseState(&x, &y);
+            
+            if (buttonClicked(x,y,slow)) {
+                speed = 400;
+                firstFrame = false;
+            }
+            else if (buttonClicked(x, y, medium)) {
+                speed = 200;
+                firstFrame = false;
+            }
+            else if (buttonClicked(x, y, fast)) {
+                speed = 100;
+                firstFrame = false;
+            }
+           
+            
+            break;
+        }
+        SDL_Delay(100);
+    }
 
+    
 
     Snake snake;
     snake.headTurnNorth = graphic.loadTexture("headNorth.png");
@@ -69,13 +103,15 @@ int main(int argc, char* argv[]) {
 
     bool running = true;
     SDL_Event event;
-
+ 
 
     while (running) {
+       
 
 
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
+
         }
 
         if (snake.gameOver()) running = false;
@@ -97,7 +133,7 @@ int main(int argc, char* argv[]) {
 
 
         graphic.presentScene();
-        SDL_Delay(200);
+        SDL_Delay(speed);
     }
 
     SDL_DestroyTexture(background); background = nullptr;
@@ -107,8 +143,9 @@ int main(int argc, char* argv[]) {
 
 
     graphic.quitText(name, font70);
-    graphic.quitText(slow, font20);
-    graphic.quitText(fast, font20);
+    graphic.quitText(slow.line, font20);
+    graphic.quitText(medium.line, font20);
+    graphic.quitText(fast.line, font20);
 
     graphic.quit();
     return 0;
