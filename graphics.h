@@ -122,11 +122,25 @@ struct Graphics {
 		SDL_FreeSurface(textSurface);
 		return texture;
 	}
-	void quitText(SDL_Texture* text, TTF_Font* font ) {
+	/*void quitText(SDL_Texture* text, TTF_Font* font ) {
 		SDL_DestroyTexture(text);
-		TTF_CloseFont(font);
+		if (font != nullptr) {
+			TTF_CloseFont(font);
+		}
 		text = NULL;
+	}*/
+	void quitText(SDL_Texture** text, TTF_Font** font) {
+		if (text && *text) {  // Kiểm tra kỹ con trỏ
+			SDL_DestroyTexture(*text);
+			*text = nullptr;
+		}
+
+		if (font && *font) {  // Kiểm tra font trước khi đóng
+			TTF_CloseFont(*font);
+			*font = nullptr;
+		}
 	}
+
 	void renderButton(int x, int y, Button& button) {
 		// Lấy kích thước chữ từ texture
 		int textW, textH;
@@ -202,6 +216,11 @@ void spawnFood(SDL_Rect& food) {
 	food.h = CELL_SIZE;  // Đặt chiều cao
 }
 
+void resetGame(Snake& snake, SDL_Rect& food, Graphics& graphic) {
+	snake.resetSnake();
+	spawnFood(food);
+	graphic.presentScene();
+}
 
 
 

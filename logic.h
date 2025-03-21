@@ -40,6 +40,15 @@ struct Snake {
         dy = 0;
     }
 
+    void resetSnake() {
+        body = { { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, CELL_SIZE, CELL_SIZE } };
+        head = body.front();
+        body.push_back(head);
+
+
+        dx = speed;
+        dy = 0;
+    }
     void grow() {
         SDL_Rect newSegment = body.back();
         if (tailDirection() == "East") newSegment.x -= CELL_SIZE; // Rắn đi phải, đuôi thêm vào bên trái
@@ -60,7 +69,7 @@ struct Snake {
         newHead.y = ((newHead.y % SCREEN_HEIGHT) + SCREEN_HEIGHT) % SCREEN_HEIGHT;
 
         //Kiểm tra va chạm trước khi cập nhật vị trí
-        if (gameOver()) exit(0);
+        if (gameOver()) return;
         // Chèn newHead vào đầu danh sách, loại bỏ phần tử cuối cùng
         body.insert(body.begin(), newHead);
         body.pop_back();

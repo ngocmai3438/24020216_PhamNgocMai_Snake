@@ -20,7 +20,7 @@ void waitUntilKeyPressed()
 }
 
 int main(int argc, char* argv[]) {
-    
+
     Graphics graphic;
     graphic.initSDL();
     int speed;
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     SDL_Color colorSpeed = { 153,0,0 };
     SDL_Texture* chooseSpeed = graphic.renderText("Choose snake speed", font30, colorSpeed);
     graphic.renderTexture(chooseSpeed, 160, 250);
-    
+
     Button slow, medium, fast;
     TTF_Font* font20 = graphic.loadFont("Game Paused DEMO.otf", 20);
     SDL_Color color = { 204,204,0 };
@@ -53,17 +53,23 @@ int main(int argc, char* argv[]) {
     bool firstFrame = true;
     SDL_Event firstEvent;
     int x, y;
+
+    bool running = true;
+    SDL_Event event;
+
     while (firstFrame) {
         SDL_WaitEvent(&firstEvent);
-        
+
         switch (firstEvent.type) {
         case SDL_QUIT:
-            exit(0);
+            firstFrame = false;
+            running = false;
+            break;
         case SDL_MOUSEBUTTONDOWN:
             SDL_GetMouseState(&x, &y);
-            
-            if (buttonClicked(x,y,slow)) {
-                speed = 400;
+
+            if (buttonClicked(x, y, slow)) {
+                speed = 300;
                 firstFrame = false;
             }
             else if (buttonClicked(x, y, medium)) {
@@ -74,14 +80,10 @@ int main(int argc, char* argv[]) {
                 speed = 100;
                 firstFrame = false;
             }
-           
-            
             break;
         }
         SDL_Delay(100);
     }
-
-    
 
     Snake snake;
     snake.headTurnNorth = graphic.loadTexture("headNorth.png");
@@ -101,20 +103,49 @@ int main(int argc, char* argv[]) {
 
     spawnFood(food);
 
-    bool running = true;
-    SDL_Event event;
- 
+    
 
     while (running) {
-       
-
-
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
-
         }
 
-        if (snake.gameOver()) running = false;
+        if (snake.gameOver()) {
+            SDL_Texture* end = graphic.renderText("GAME OVER", font70, colorName);
+            graphic.renderTexture(end, 130, 200);
+            graphic.presentScene();
+
+            Button again, exi;
+            again.line = graphic.renderText("again", font20, color);
+            exi.line = graphic.renderText("exit", font20, color);
+            graphic.renderButton(180, 300, again);
+            graphic.renderButton(380, 300, exi);
+
+            graphic.presentScene();
+
+            bool gameOverLoop = true;
+            while (gameOverLoop) {
+                SDL_WaitEvent(&event);
+                switch (event.type) {
+                case SDL_QUIT:
+                    running = false;
+                    gameOverLoop = false;
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                    SDL_GetMouseState(&x, &y);
+                    if (buttonClicked(x, y, again)) {
+                        resetGame(snake, food, graphic);
+                        gameOverLoop = false;
+                    }
+                    else if (buttonClicked(x, y, exi)) {
+                        graphic.quitText(&end, &font70);
+                        gameOverLoop = false;
+                        running = false;
+                    }
+                    break;
+                }
+            }
+        }
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
         if (currentKeyStates[SDL_SCANCODE_UP]) snake.turnNorth();
@@ -131,7 +162,6 @@ int main(int argc, char* argv[]) {
 
         render(background, snake, food, cherry, graphic);
 
-
         graphic.presentScene();
         SDL_Delay(speed);
     }
@@ -141,12 +171,12 @@ int main(int argc, char* argv[]) {
 
     snake.quitTexture();
 
-
-    graphic.quitText(name, font70);
-    graphic.quitText(slow.line, font20);
-    graphic.quitText(medium.line, font20);
-    graphic.quitText(fast.line, font20);
+    graphic.quitText(&name, &font70);
+    graphic.quitText(&slow.line, &font20);
+    graphic.quitText(&medium.line, &font20);
+    graphic.quitText(&fast.line, &font20);
 
     graphic.quit();
+
     return 0;
 }
