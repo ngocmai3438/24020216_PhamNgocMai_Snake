@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
             SDL_GetMouseState(&x, &y);
 
             if (buttonClicked(x, y, slow)) {
-                speed = 300;
+                speed = 280;
                 firstFrame = false;
             }
             else if (buttonClicked(x, y, medium)) {
@@ -138,13 +138,17 @@ int main(int argc, char* argv[]) {
                         gameOverLoop = false;
                     }
                     else if (buttonClicked(x, y, exi)) {
-                        graphic.quitText(&end, &font70);
+                        
                         gameOverLoop = false;
                         running = false;
                     }
                     break;
                 }
             }
+            graphic.quitText(&end, &font70);
+            graphic.quitText(&again.line, &font20);
+            graphic.quitText(&exi.line, &font20);
+           
         }
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 

@@ -148,6 +148,19 @@ struct Snake {
         if (body.size() < 2) return "Unknown";
         SDL_Rect tail = body.back();
         SDL_Rect pretail = body[body.size() - 2];
+
+        // Xử lý wrap-around theo chiều dọc
+        if (tail.x == pretail.x) {
+            if ((pretail.y - tail.y + SCREEN_HEIGHT) % SCREEN_HEIGHT == CELL_SIZE) return "South";
+            if ((tail.y - pretail.y + SCREEN_HEIGHT) % SCREEN_HEIGHT == CELL_SIZE) return "North";
+        }
+
+        // Xử lý wrap-around theo chiều ngang
+        if (tail.y == pretail.y) {
+            if ((pretail.x - tail.x + SCREEN_WIDTH) % SCREEN_WIDTH == CELL_SIZE) return "East";
+            if ((tail.x - pretail.x + SCREEN_WIDTH) % SCREEN_WIDTH == CELL_SIZE) return "West";
+        }
+
         if (tail.x == pretail.x && tail.y < pretail.y) return "South";
         if (tail.x == pretail.x && tail.y > pretail.y) return "North";
         if (tail.x > pretail.x && tail.y == pretail.y) return "West";
