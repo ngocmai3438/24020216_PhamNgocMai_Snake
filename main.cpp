@@ -145,9 +145,9 @@ int main(int argc, char* argv[]) {
                     break;
                 }
             }
-            graphic.quitText(&end, &font70);
-            graphic.quitText(&again.line, &font20);
-            graphic.quitText(&exi.line, &font20);
+            SDL_DestroyTexture(end); end = nullptr;
+            SDL_DestroyTexture(again.line); again.line = nullptr;
+            SDL_DestroyTexture(exi.line); exi.line = nullptr;
            
         }
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);

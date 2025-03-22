@@ -41,6 +41,7 @@ struct Snake {
     }
 
     void resetSnake() {
+        body.clear();
         body = { { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, CELL_SIZE, CELL_SIZE } };
         head = body.front();
         body.push_back(head);
