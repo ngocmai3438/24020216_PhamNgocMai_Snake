@@ -46,7 +46,6 @@ struct Snake {
         head = body.front();
         body.push_back(head);
 
-
         dx = speed;
         dy = 0;
     }

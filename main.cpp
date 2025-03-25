@@ -4,11 +4,35 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 #include <string>
+#include <fstream>
 #include "defs.h"
 #include "logic.h"
 #include "graphics.h"
 
 using namespace std;
+
+int loadHighScore() {
+    int highScore = 0; 
+    ifstream inFile("highscore.txt");
+
+    if (inFile) {
+        if (!(inFile >> highScore)) {  // Nếu file rỗng hoặc dữ liệu không hợp lệ
+            highScore = 0;
+        }
+        inFile.close();
+    }
+    return highScore;
+}
+void saveHighScore(int score) {
+    ofstream outFile("highscore.txt");
+    int currentHighScore = loadHighScore();
+    if (score > currentHighScore) {
+        if (outFile) {
+            outFile << score;
+            outFile.close();
+        }
+    }
+}
 
 void waitUntilKeyPressed()
 {
@@ -27,28 +51,32 @@ int main(int argc, char* argv[]) {
     int speed;
 
     //Mở đầu
-    SDL_Texture* background = graphic.loadTexture("background.jpg");
+    SDL_Texture* background = graphic.loadTexture("Img/background.jpg");
     graphic.prepareScene(background);
 
-    TTF_Font* font70 = graphic.loadFont("Game Paused DEMO.otf", 70);
+    TTF_Font* font100 = graphic.loadFont("Fonts/Game Paused DEMO.otf", 100);
     SDL_Color colorName = { 204,0,0,0 };
-    SDL_Texture* name = graphic.renderText("SNAKE", font70, colorName);
+    SDL_Texture* name = graphic.renderText("SNAKE", font100, colorName);
+
+    //Cái font này cho đoạn sau thui
+    TTF_Font* font70 = graphic.loadFont("Fonts/Game Paused DEMO.otf", 90);
+    
     graphic.renderTexture(name, 200, 170);
     //Enter Speed
-    TTF_Font* font30 = graphic.loadFont("Game Paused DEMO.otf", 30);
+    TTF_Font* font30 = graphic.loadFont("Fonts/Game Paused DEMO.otf", 60);
     SDL_Color colorSpeed = { 153,0,0 };
     SDL_Texture* chooseSpeed = graphic.renderText("Choose snake speed", font30, colorSpeed);
-    graphic.renderTexture(chooseSpeed, 160, 250);
+    graphic.renderTexture(chooseSpeed, 100, 270);
 
     Button slow, medium, fast;
-    TTF_Font* font20 = graphic.loadFont("Game Paused DEMO.otf", 20);
+    TTF_Font* font20 = graphic.loadFont("Fonts/Game Paused DEMO.otf", 20);
     SDL_Color color = { 204,204,0 };
     slow.line = graphic.renderText("slow", font20, color);
     medium.line = graphic.renderText("medium", font20, color);
     fast.line = graphic.renderText("fast", font20, color);
-    graphic.renderButton(110, 300, slow);
-    graphic.renderButton(260, 300, medium);
-    graphic.renderButton(420, 300, fast);
+    graphic.renderButton(110, 350, slow);
+    graphic.renderButton(260, 350, medium);
+    graphic.renderButton(420, 350, fast);
     graphic.presentScene();
 
     bool firstFrame = true;
@@ -88,54 +116,68 @@ int main(int argc, char* argv[]) {
 
     // Game chính
     Snake snake;
-    snake.headTurnNorth = graphic.loadTexture("headNorth.png");
-    snake.headTurnSouth = graphic.loadTexture("headSouth.png");
-    snake.headTurnWest = graphic.loadTexture("headWest.png");
-    snake.headTurnEast = graphic.loadTexture("headEast.png");
+    snake.headTurnNorth = graphic.loadTexture("Img/headNorth.png");
+    snake.headTurnSouth = graphic.loadTexture("Img/headSouth.png");
+    snake.headTurnWest = graphic.loadTexture("Img/headWest.png");
+    snake.headTurnEast = graphic.loadTexture("Img/headEast.png");
 
-    snake.bodyImage = graphic.loadTexture("bodyImage.png");
+    snake.bodyImage = graphic.loadTexture("Img/bodyImage.png");
 
-    snake.tailTurnNorth = graphic.loadTexture("tailNorth.png");
-    snake.tailTurnSouth = graphic.loadTexture("tailSouth.png");
-    snake.tailTurnWest = graphic.loadTexture("tailWest.png");
-    snake.tailTurnEast = graphic.loadTexture("tailEast.png");
+    snake.tailTurnNorth = graphic.loadTexture("Img/tailNorth.png");
+    snake.tailTurnSouth = graphic.loadTexture("Img/tailSouth.png");
+    snake.tailTurnWest = graphic.loadTexture("Img/tailWest.png");
+    snake.tailTurnEast = graphic.loadTexture("Img/tailEast.png");
 
     SDL_Rect food;
-    SDL_Texture* cherry = graphic.loadTexture("apple.png");
-
+    SDL_Texture* cherry = graphic.loadTexture("Img/apple.png");
     spawnFood(food);
+
     int score = 0;
-    TTF_Font* numFont30 = graphic.loadFont("RetroGaming.ttf", 30);
+    TTF_Font* numFont30 = graphic.loadFont("Fonts/RetroGaming.ttf", 30);
     SDL_Texture* scoreTexture = nullptr; 
+
+    SDL_Texture* recordTexture = nullptr;
+
+    int highScore = loadHighScore();
 
     while (running) {
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) running = false;
         }
-        graphic.prepareScene(background);
+        /*graphic.prepareScene(background);*/
         // Hủy texture cũ nếu đã tồn tại
         if (scoreTexture) {
             SDL_DestroyTexture(scoreTexture);
         }
+        if (recordTexture) {
+            SDL_DestroyTexture(recordTexture);
+        }
 
         // Tạo chuỗi hiển thị điểm số
-        string scoreStr = "SCORE: " + to_string(score) + "/50";
+        string scoreStr = "SCORE: " + to_string(score);
         scoreTexture = graphic.renderText(scoreStr.c_str(), numFont30, colorSpeed);
 
-    
-        if (snake.gameOver() || score >= 5) {
-            SDL_Texture* end = graphic.renderText("GAME OVER", font70, colorName);
-            SDL_Texture* win = graphic.renderText("YOU WIN", font70, colorName);
+        // Hiển thị record score
+        /*highScore = loadHighScore();*/
+        /*string record = "RECORD SCORE: " + to_string(highScore);
+        recordTexture = graphic.renderText(record.c_str(), numFont30, colorSpeed);*/
 
-            if (snake.gameOver()) {
+        cout << score << " " << highScore << '\n';
+        // Game Over hoặc Lập Record Mới
+        if (snake.gameOver()) {
+            int oldHighScore = loadHighScore();
+            saveHighScore(score);
+            highScore = loadHighScore();
+            string newRecord = "NEW RECORD: " + to_string(highScore);
+            SDL_Texture* win = graphic.renderText(newRecord.c_str(), font70, colorName);
+            SDL_Texture* end = graphic.renderText("GAME OVER", font70, colorName);
+            if (score > oldHighScore) {
+                graphic.renderTexture(win, 70, 200);
+            }
+            else {   
                 graphic.renderTexture(end, 130, 200);
-                graphic.presentScene();
             }
-            else if (score >= 5) {
-                graphic.renderTexture(win, 180, 200);
                 graphic.presentScene();
-                score = 0;
-            }
 
             Button again, exi;
             again.line = graphic.renderText("again", font20, color);
@@ -167,6 +209,7 @@ int main(int argc, char* argv[]) {
                     break;
                 }
             }
+            score = 0;
             //destroy texture để giữ lại font
             SDL_DestroyTexture(win); end = nullptr;
             SDL_DestroyTexture(end); end = nullptr;
@@ -188,7 +231,7 @@ int main(int argc, char* argv[]) {
         if (snake.eatFood(food)) {
             snake.grow();
             spawnFood(food);
-            score++;
+            score++;            
         }
 
         render(background, snake, food, cherry, graphic);
@@ -197,12 +240,16 @@ int main(int argc, char* argv[]) {
         SDL_Delay(speed);
     }
 
+    if (score > loadHighScore()) {
+        saveHighScore(highScore);
+    } 
     SDL_DestroyTexture(background); background = nullptr;
     SDL_DestroyTexture(cherry); cherry = nullptr;
 
     snake.quitTexture();
 
     graphic.quitText(&chooseSpeed, &font30);
+    graphic.quitText(&name, &font100);
     graphic.quitText(&name, &font70);
     graphic.quitText(&slow.line, &font20);
     graphic.quitText(&medium.line, &font20);
