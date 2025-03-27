@@ -23,10 +23,10 @@ int loadHighScore() {
     }
     return highScore;
 }
-void saveHighScore(int score) {
-    ofstream outFile("highscore.txt");
+void saveHighScore(int score) { 
     int currentHighScore = loadHighScore();
     if (score > currentHighScore) {
+        ofstream outFile("highscore.txt");
         if (outFile) {
             outFile << score;
             outFile.close();
@@ -158,7 +158,6 @@ int main(int argc, char* argv[]) {
         scoreTexture = graphic.renderText(scoreStr.c_str(), numFont30, colorSpeed);
 
         // Hiển thị record score
-        /*highScore = loadHighScore();*/
         string record = "RECORD SCORE: " + to_string(highScore);
         recordTexture = graphic.renderText(record.c_str(), numFont30, colorSpeed);
 
@@ -240,9 +239,9 @@ int main(int argc, char* argv[]) {
         SDL_Delay(speed);
     }
 
-    if (score > loadHighScore()) {
+    //if (score > loadHighScore()) {
         saveHighScore(highScore);
-    } 
+    //} 
     SDL_DestroyTexture(background); background = nullptr;
     SDL_DestroyTexture(cherry); cherry = nullptr;
 
