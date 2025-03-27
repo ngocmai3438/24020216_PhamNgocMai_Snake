@@ -159,10 +159,9 @@ int main(int argc, char* argv[]) {
 
         // Hiển thị record score
         /*highScore = loadHighScore();*/
-        /*string record = "RECORD SCORE: " + to_string(highScore);
-        recordTexture = graphic.renderText(record.c_str(), numFont30, colorSpeed);*/
+        string record = "RECORD SCORE: " + to_string(highScore);
+        recordTexture = graphic.renderText(record.c_str(), numFont30, colorSpeed);
 
-        cout << score << " " << highScore << '\n';
         // Game Over hoặc Lập Record Mới
         if (snake.gameOver()) {
             int oldHighScore = loadHighScore();
@@ -236,6 +235,7 @@ int main(int argc, char* argv[]) {
 
         render(background, snake, food, cherry, graphic);
         graphic.renderTexture(scoreTexture, 10, 10);
+        graphic.renderTexture(recordTexture, 10, 50);
         graphic.presentScene();
         SDL_Delay(speed);
     }
@@ -255,6 +255,7 @@ int main(int argc, char* argv[]) {
     graphic.quitText(&medium.line, &font20);
     graphic.quitText(&fast.line, &font20);
 
+    graphic.quitText(&recordTexture, &font30);
     graphic.quitText(&scoreTexture, &font30);
     if (scoreTexture) {
         SDL_DestroyTexture(scoreTexture);
