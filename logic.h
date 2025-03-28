@@ -35,7 +35,7 @@ struct Snake {
         head = body.front();
         body.push_back(head);
 
-       
+
         dx = speed;
         dy = 0;
     }
@@ -56,7 +56,7 @@ struct Snake {
         else if (tailDirection() == "South") newSegment.y -= CELL_SIZE; // Rắn đi xuống, đuôi thêm vào trên
         else if (tailDirection() == "North") newSegment.y += CELL_SIZE; // Rắn đi lên, đuôi thêm vào dưới
         body.push_back(newSegment);
-       
+
     }
 
     void move() {
@@ -125,23 +125,23 @@ struct Snake {
         SDL_Rect newHead = body.front();
         newHead.x += dx * CELL_SIZE;
         newHead.y += dy * CELL_SIZE;
+
+        // Nếu rắn đi ra ngoài màn hình, dịch chuyển sang phía đối diện
+        if (newHead.x < 0) newHead.x = (MAP_WIDTH - 1) * CELL_SIZE;
+        else if (newHead.x >= MAP_WIDTH * CELL_SIZE) newHead.x = 0;
+
+        if (newHead.y < 0) newHead.y = (MAP_HEIGHT - 1) * CELL_SIZE;
+        else if (newHead.y >= MAP_HEIGHT * CELL_SIZE) newHead.y = 0;
+
+
         for (size_t i = 1; i < body.size(); i++) {
             if (SDL_HasIntersection(&newHead, &body[i])) rel = true;
         }
-        return rel;
         
-    }
+        if (map[newHead.y / CELL_SIZE][newHead.x / CELL_SIZE] == 1) rel = true;
 
-    /*bool checkCollision() {
-        SDL_Rect head = body.front();
-        if (head.x < 0 || head.x >= SCREEN_WIDTH || head.y < 0 || head.y >= SCREEN_HEIGHT)
-            return true;
-        for (size_t i = 1; i < body.size(); i++) {
-            if (head.x == body[i].x && head.y == body[i].y)
-                return true;
-        }
-        return false;
-    }*/
+        return rel;
+    }
 
     //Xác định hướng của đuôi rắn
     string tailDirection() const {
@@ -168,7 +168,7 @@ struct Snake {
         return "Unknown";
     }
     void quitTexture() {
-        
+
         SDL_DestroyTexture(headTurnNorth); headTurnNorth = nullptr;
         SDL_DestroyTexture(headTurnSouth); headTurnSouth = nullptr;
         SDL_DestroyTexture(headTurnEast); headTurnEast = nullptr;
@@ -192,6 +192,23 @@ struct Button {
         rect.w = 0;
         rect.h = 0;
 
+    }
+};
+
+
+struct Wall {
+    int x, y;
+    SDL_Rect position;
+
+    Wall(int _x, int _y) {
+        x = _x;
+        y = _y;
+        position = { _x, _y, CELL_SIZE, CELL_SIZE }; 
+    }
+    
+    void render(SDL_Renderer* renderer) {
+        SDL_SetRenderDrawColor(renderer,150, 75, 0, 255);
+        SDL_RenderFillRect(renderer, &position);
     }
 };
 #endif

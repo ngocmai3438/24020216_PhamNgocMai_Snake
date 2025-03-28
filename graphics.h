@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <vector>
 #include "defs.h"
 
 struct Graphics {
@@ -122,25 +123,30 @@ struct Graphics {
 		SDL_FreeSurface(textSurface);
 		return texture;
 	}
-	/*void quitText(SDL_Texture* text, TTF_Font* font ) {
-		SDL_DestroyTexture(text);
-		if (font != nullptr) {
-			TTF_CloseFont(font);
-		}
-		text = NULL;
-	}*/
-	void quitText(SDL_Texture** text, TTF_Font** font) {
-		if (text && *text) {  // Kiểm tra kỹ con trỏ
-			SDL_DestroyTexture(*text);
-			*text = nullptr;
-		}
 
-		if (font && *font) {  // Kiểm tra font trước khi đóng
+	//void quitText(SDL_Texture** text, TTF_Font** font) {
+	//	if (text && *text) {  // Kiểm tra kỹ con trỏ
+	//		SDL_DestroyTexture(*text);
+	//		*text = nullptr;
+	//	}
+
+	//	if (font && *font) {  // Kiểm tra font trước khi đóng
+	//		TTF_CloseFont(*font);
+	//		*font = nullptr;
+	//	}
+	//}
+	void closeFont(TTF_Font** font) {
+		if (font && *font) {
 			TTF_CloseFont(*font);
 			*font = nullptr;
 		}
 	}
-
+	void quitText(SDL_Texture** text) {
+		if (text && *text) {
+			SDL_DestroyTexture(*text);
+			*text = nullptr;
+		}
+	}
 	void renderButton(int x, int y, Button& button) {
 		// Lấy kích thước chữ từ texture
 		int textW, textH;
@@ -209,9 +215,13 @@ void render(SDL_Texture* background, const Snake& snake, const SDL_Rect& food, S
 	}
 }
 //Tạo food
+
 void spawnFood(SDL_Rect& food) {
-	food.x = (rand() % (SCREEN_WIDTH / CELL_SIZE)) * CELL_SIZE;
-    food.y = (rand() % (SCREEN_HEIGHT / CELL_SIZE)) * CELL_SIZE;
+	
+	do {
+		food.x = (rand() % (SCREEN_WIDTH / CELL_SIZE)) * CELL_SIZE;
+		food.y = (rand() % (SCREEN_HEIGHT / CELL_SIZE)) * CELL_SIZE;
+	} while (map[food.y/CELL_SIZE][food.x/CELL_SIZE] == 1);
 	food.w = CELL_SIZE; // Đặt chiều rộng
 	food.h = CELL_SIZE;  // Đặt chiều cao
 }
@@ -222,6 +232,19 @@ void resetGame(Snake& snake, SDL_Rect& food, Graphics& graphic) {
 	graphic.presentScene();
 }
 
+//Vẽ map wall
 
+void renderMapWall(vector<vector<int>> &map, Graphics& graphic) {
+
+	for (int i = 0; i < MAP_HEIGHT; i++) {
+		for (int j = 0; j < MAP_WIDTH; j++) {
+			if (map[i][j] == 1) {
+				Wall wall(j*CELL_SIZE, i*CELL_SIZE);
+				wall.render(graphic.renderer);
+			}
+			
+		}
+	}
+}
 
 #endif
