@@ -13,9 +13,9 @@
 
 using namespace std;
 
-int round1_loadHighScore() {
+int loadHighScore(const string& filename) {
     int highScore = 0;
-    ifstream inFile("highscore1.txt");
+    ifstream inFile(filename);
 
     if (inFile) {
         if (!(inFile >> highScore)) {
@@ -25,46 +25,14 @@ int round1_loadHighScore() {
     }
     return highScore;
 }
-void round1_saveHighScore(int score) {
-    int currentHighScore = round1_loadHighScore();
+void saveHighScore(const string& filename,int score) {
+    int currentHighScore = loadHighScore(filename);
     if (score > currentHighScore) {
-        ofstream outFile("highscore1.txt");
+        ofstream outFile(filename);
         if (outFile) {
             outFile << score;
             outFile.close();
         }
-    }
-}
-
-int round2_loadHighScore() {
-    int highScore = 0;
-    ifstream inFile("highscore2.txt");
-
-    if (inFile) {
-        if (!(inFile >> highScore)) {
-            highScore = 0;
-        }
-        inFile.close();
-    }
-    return highScore;
-}
-void round2_saveHighScore(int score) {
-    int currentHighScore = round2_loadHighScore();
-    if (score > currentHighScore) {
-        ofstream outFile("highscore2.txt");
-        if (outFile) {
-            outFile << score;
-            outFile.close();
-        }
-    }
-}
-void waitUntilKeyPressed()
-{
-    SDL_Event e;
-    while (true) {
-        if (SDL_PollEvent(&e) != 0 && (e.type == SDL_KEYDOWN || e.type == SDL_QUIT))
-            return;
-        SDL_Delay(200);
     }
 }
 
@@ -75,9 +43,7 @@ int main(int argc, char* argv[]) {
 
     bool game = true;
     do {
-
         int speed;
-
         //Mở đầu
         SDL_Texture* background = graphic.loadTexture("Img/background.jpg");
         graphic.prepareScene(background);
@@ -191,31 +157,31 @@ int main(int argc, char* argv[]) {
         int score = 0;
         TTF_Font* numFont30 = graphic.loadFont("Fonts/RetroGaming.ttf", 30);
         SDL_Texture* scoreTexture = nullptr;
-
         SDL_Texture* recordTexture = nullptr;
 
-
-        //ROUND 2 (HARD)
-        int highScore2 = round2_loadHighScore();
-        while (round2) {
+        string filename = round1 ? "highscore1.txt" : "highscore2.txt";
+        int highScore = loadHighScore(filename);
+        
+        while (round2 || round1) {
             // Vẽ map
-            for (int i = 6; i < 14; i++) {
-                map[6][i] = 1;
-                map[i][6] = 1;
+            if (round2) {
+                for (int i = 6; i < 14; i++) {
+                    map[6][i] = 1;
+                    map[i][6] = 1;
+                }
+                for (int i = 24; i > 15; i--) {
+                    map[24][i] = 1;
+                    map[i][24] = 1;
+                }
+                for (int i = 17; i < 20; i++) {
+                    map[10][i] = 1;
+                    map[i][10] = 1;
+                }
+                for (int i = 10; i < 14; i++) {
+                    map[20][i] = 1;
+                    map[i][20] = 1;
+                }
             }
-            for (int i = 24; i > 15; i--) {
-                map[24][i] = 1;
-                map[i][24] = 1;
-            }
-            for (int i = 17; i < 20; i++) {
-                map[10][i] = 1;
-                map[i][10] = 1;
-            }
-            for (int i = 10; i < 14; i++) {
-                map[20][i] = 1;
-                map[i][20] = 1;
-            }
-
             while (SDL_PollEvent(&event)) {
                 if (event.type == SDL_QUIT) {
                     round2 = false;
@@ -236,15 +202,15 @@ int main(int argc, char* argv[]) {
             scoreTexture = graphic.renderText(scoreStr.c_str(), numFont30, colorSpeed);
 
             // Hiển thị record score
-            string record = "RECORD SCORE: " + to_string(highScore2);
+            string record = "RECORD SCORE: " + to_string(highScore);
             recordTexture = graphic.renderText(record.c_str(), numFont30, colorSpeed);
 
             // Game Over hoặc Lập Record Mới
             if (snake.gameOver()) {
-                int oldHighScore = round2_loadHighScore();
-                round2_saveHighScore(score);
-                highScore2 = round2_loadHighScore();
-                string newRecord = "NEW RECORD: " + to_string(highScore2);
+                int oldHighScore = loadHighScore(filename);
+                saveHighScore(filename,score);
+                highScore = loadHighScore(filename);
+                string newRecord = "NEW RECORD: " + to_string(highScore);
                 SDL_Texture* win = graphic.renderText(newRecord.c_str(), font70, colorName);
                 SDL_Texture* end = graphic.renderText("GAME OVER", font70, colorName);
                 if (score > oldHighScore) {
@@ -283,6 +249,7 @@ int main(int argc, char* argv[]) {
                             gameOverLoop = false;
                             round1 = false;
                             round2 = false;
+                            game = false;
                         }
                         break;
                     }
@@ -322,119 +289,9 @@ int main(int argc, char* argv[]) {
         }
 
 
-        //ROUND 1 (EASY)
-        int highScore1 = round1_loadHighScore();
-        while (round1) {
-            while (SDL_PollEvent(&event)) {
-                if (event.type == SDL_QUIT) {
-                    round1 = false;
-                    game = false;
-                }
-            }
-
-            // Hủy texture cũ nếu đã tồn tại
-            if (scoreTexture) {
-                SDL_DestroyTexture(scoreTexture);
-            }
-            if (recordTexture) {
-                SDL_DestroyTexture(recordTexture);
-            }
-
-            // Tạo chuỗi hiển thị điểm số
-            string scoreStr = "SCORE: " + to_string(score);
-            scoreTexture = graphic.renderText(scoreStr.c_str(), numFont30, colorSpeed);
-
-            // Hiển thị record score
-            string record = "RECORD SCORE: " + to_string(highScore1);
-            recordTexture = graphic.renderText(record.c_str(), numFont30, colorSpeed);
-
-            // Game Over hoặc Lập Record Mới
-            if (snake.gameOver()) {
-                int oldHighScore = round1_loadHighScore();
-                round1_saveHighScore(score);
-                highScore1 = round1_loadHighScore();
-                string newRecord = "NEW RECORD: " + to_string(highScore1);
-                SDL_Texture* win = graphic.renderText(newRecord.c_str(), font70, colorName);
-                SDL_Texture* end = graphic.renderText("GAME OVER", font70, colorName);
-                if (score > oldHighScore) {
-                    graphic.renderTexture(win, 70, 200);
-                }
-                else {
-                    graphic.renderTexture(end, 130, 200);
-                }
-                graphic.presentScene();
-
-                Button again, exi;
-                again.line = graphic.renderText("again", font20, color);
-                exi.line = graphic.renderText("exit", font20, color);
-                graphic.renderButton(180, 300, again);
-                graphic.renderButton(380, 300, exi);
-
-                graphic.presentScene();
-
-                bool gameOverLoop = true;
-                while (gameOverLoop) {
-                    SDL_WaitEvent(&event);
-                    switch (event.type) {
-                    case SDL_QUIT:
-                        round1 = false;
-                        gameOverLoop = false;
-                        game = false;
-                        break;
-                    case SDL_MOUSEBUTTONDOWN:
-                        SDL_GetMouseState(&x, &y);
-                        if (buttonClicked(x, y, again)) {
-                            resetGame(snake, food, graphic);
-                            gameOverLoop = false;
-                        }
-                        else if (buttonClicked(x, y, exi)) {
-
-                            gameOverLoop = false;
-                            round1 = false;
-                            round2 = false;
-                        }
-                        break;
-                    }
-                }
-                score = 0;
-                //destroy texture để giữ lại font
-                SDL_DestroyTexture(win); end = nullptr;
-                SDL_DestroyTexture(end); end = nullptr;
-                SDL_DestroyTexture(again.line); again.line = nullptr;
-                SDL_DestroyTexture(exi.line); exi.line = nullptr;
-
-
-            }
-
-            const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
-
-            if (currentKeyStates[SDL_SCANCODE_UP]) snake.turnNorth();
-            if (currentKeyStates[SDL_SCANCODE_DOWN]) snake.turnSouth();
-            if (currentKeyStates[SDL_SCANCODE_LEFT]) snake.turnWest();
-            if (currentKeyStates[SDL_SCANCODE_RIGHT]) snake.turnEast();
-
-            snake.move();
-
-            if (snake.eatFood(food)) {
-                snake.grow();
-                spawnFood(food);
-                score++;
-            }
-
-            render(background, snake, food, cherry, graphic);
-            graphic.renderTexture(scoreTexture, 10, 10);
-            graphic.renderTexture(recordTexture, 10, 50);
-            graphic.presentScene();
-            SDL_Delay(speed);
-        }
-
         //Lưu điểm
-        if (round1 == 1 && round2 == 0) {
-            round1_saveHighScore(highScore1);
-        }
-        if (round1 == 0 && round2 == 1) {
-            round2_saveHighScore(highScore2);
-        }
+        saveHighScore(filename,highScore);
+
 
         //Destroy mọi thứ
         for (int i = 0; i < MAP_HEIGHT; i++) {
@@ -448,10 +305,11 @@ int main(int argc, char* argv[]) {
 
         snake.quitTexture();
 
-        graphic.closeFont(&font100);
-        graphic.closeFont(&font70);
-        graphic.closeFont(&font30);
-        graphic.closeFont(&font20);
+        TTF_CloseFont(font100);
+        TTF_CloseFont(font70);
+        TTF_CloseFont(font30);
+        TTF_CloseFont(font20);
+        TTF_CloseFont(numFont30);
 
         graphic.quitText(&chooseSpeed);
         graphic.quitText(&name);
@@ -463,13 +321,6 @@ int main(int argc, char* argv[]) {
 
         graphic.quitText(&recordTexture);
         graphic.quitText(&scoreTexture);
-
-        if (scoreTexture) {
-            SDL_DestroyTexture(scoreTexture);
-            scoreTexture = nullptr;
-        }
-        TTF_CloseFont(numFont30);
-
 
     } while (game);
     graphic.quit();

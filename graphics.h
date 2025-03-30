@@ -124,17 +124,6 @@ struct Graphics {
 		return texture;
 	}
 
-	//void quitText(SDL_Texture** text, TTF_Font** font) {
-	//	if (text && *text) {  // Kiểm tra kỹ con trỏ
-	//		SDL_DestroyTexture(*text);
-	//		*text = nullptr;
-	//	}
-
-	//	if (font && *font) {  // Kiểm tra font trước khi đóng
-	//		TTF_CloseFont(*font);
-	//		*font = nullptr;
-	//	}
-	//}
 	void closeFont(TTF_Font** font) {
 		if (font && *font) {
 			TTF_CloseFont(*font);
