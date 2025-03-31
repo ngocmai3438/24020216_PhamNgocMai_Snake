@@ -1,2 +1,12 @@
 ﻿  main.cpp
+D:\GameSDL\Snake\graphics.h(152,48): warning C4305: 'argument': truncation from 'int' to 'Uint8'
+  (compiling source file 'main.cpp')
+  
+D:\GameSDL\Snake\graphics.h(152,48): warning C4309: 'argument': truncation of constant value
+  (compiling source file 'main.cpp')
+  
+D:\GameSDL\Snake\graphics.h(178,8): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  (compiling source file 'main.cpp')
+  
+D:\GameSDL\Snake\main.cpp(54,15): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Snake.vcxproj -> D:\GameSDL\Snake\x64\Debug\Snake.exe
