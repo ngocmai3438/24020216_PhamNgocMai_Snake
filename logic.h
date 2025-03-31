@@ -6,6 +6,7 @@
 #include <vector>
 #include "defs.h"
 
+
 using namespace std;
 
 bool overlap(const SDL_Rect& r1, const SDL_Rect& r2) {
@@ -61,6 +62,7 @@ struct Snake {
 
     void move() {
         // Tạo một bản sao của phần tử đầu tiên (đầu rắn)
+        
         SDL_Rect newHead = body.front();
         newHead.x += dx * CELL_SIZE;
         newHead.y += dy * CELL_SIZE;
@@ -73,12 +75,14 @@ struct Snake {
         // Chèn newHead vào đầu danh sách, loại bỏ phần tử cuối cùng
         body.insert(body.begin(), newHead);
         body.pop_back();
+        hasMoved = true;
     }
 
     void turnEast() {
-        if (dx == 0) {
+        if (hasMoved && dx == 0) {
             dx = speed;
             dy = 0;
+            hasMoved = false;
         }
     }
     bool check_turnEast() const {
@@ -86,9 +90,10 @@ struct Snake {
         else return false;
     }
     void turnWest() {
-        if (dx == 0) {
+        if (hasMoved && dx == 0) {
             dx = -speed;
             dy = 0;
+            hasMoved = false;
         }
     }
     bool check_turnWest() const {
@@ -96,9 +101,10 @@ struct Snake {
         else return false;
     }
     void turnNorth() {
-        if (dy == 0) {
+        if (hasMoved && dy == 0) {
             dy = -speed;
             dx = 0;
+            hasMoved = false;
         }
     }
     bool check_turnNorth() const {
@@ -106,9 +112,10 @@ struct Snake {
         else return false;
     }
     void turnSouth() {
-        if (dy == 0) {
+        if (hasMoved && dy == 0) {
             dy = speed;
             dx = 0;
+            hasMoved = false;
         }
     }
     bool check_turnSouth() const {
@@ -181,6 +188,9 @@ struct Snake {
         SDL_DestroyTexture(tailTurnWest); tailTurnWest = nullptr;
         SDL_DestroyTexture(tailTurnEast); tailTurnEast = nullptr;
     }
+   
+     private:
+         bool hasMoved; // Kiểm tra xem rắn đã di chuyển chưa
 };
 
 struct Button {
@@ -195,7 +205,7 @@ struct Button {
     }
 };
 
-
+// Chướng ngại vật
 struct Wall {
     int x, y;
     SDL_Rect position;
@@ -206,9 +216,13 @@ struct Wall {
         position = { _x, _y, CELL_SIZE, CELL_SIZE }; 
     }
     
+    //Hàm vẽ wall
     void render(SDL_Renderer* renderer) {
         SDL_SetRenderDrawColor(renderer,150, 75, 0, 255);
         SDL_RenderFillRect(renderer, &position);
     }
 };
+
+
+
 #endif

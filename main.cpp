@@ -3,6 +3,7 @@
 #include <vector>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_mixer.h> 
 #include <string>
 #include <fstream>
 #include <cstdlib> 
@@ -37,12 +38,26 @@ void saveHighScore(const string& filename,int score) {
 }
 
 int main(int argc, char* argv[]) {
+    // Khởi tạo SDL_mixer
+    Mix_Music* backgroundMusic = nullptr;
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+        printf("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+    // Tải nhạc nền
+    backgroundMusic = Mix_LoadMUS("background_sound.wav");
+    if (!backgroundMusic) {
+        printf("Failed to load background music! SDL_mixer Error: %s\n", Mix_GetError());
+    }
+    // Phát nhạc nền lặp lại vô hạn (-1)
+    Mix_PlayMusic(backgroundMusic, -1);
+
     srand(time(0));
     Graphics graphic;
     graphic.initSDL();
 
     bool game = true;
     do {
+        
         int speed;
         //Mở đầu
         SDL_Texture* background = graphic.loadTexture("Img/background.jpg");
@@ -52,7 +67,7 @@ int main(int argc, char* argv[]) {
         SDL_Color colorName = { 204,0,0,0 };
         SDL_Texture* name = graphic.renderText("SNAKE", font100, colorName);
 
-        //Cái font này cho đoạn sau thui
+        //Cái font này cho đoạn sau 
         TTF_Font* font70 = graphic.loadFont("Fonts/Game Paused DEMO.otf", 90);
 
         graphic.renderTexture(name, 200, 170);
@@ -86,6 +101,7 @@ int main(int argc, char* argv[]) {
         SDL_Event firstEvent;
         int x, y;
 
+        //Menu đầu chương trình
         SDL_Event event;
         bool speedClicked = false;
         bool roundClicked = false;
@@ -97,7 +113,7 @@ int main(int argc, char* argv[]) {
             switch (firstEvent.type) {
             case SDL_QUIT:
                 firstFrame = false;
-                /*game = false;*/
+                game = false;
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 SDL_GetMouseState(&x, &y);
@@ -136,7 +152,7 @@ int main(int argc, char* argv[]) {
         }
 
 
-        // Game chính
+        //Game chính
         Snake snake;
         snake.headTurnNorth = graphic.loadTexture("Img/headNorth.png");
         snake.headTurnSouth = graphic.loadTexture("Img/headSouth.png");
@@ -163,7 +179,14 @@ int main(int argc, char* argv[]) {
         int highScore = loadHighScore(filename);
         
         while (round2 || round1) {
-            // Vẽ map
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT) {
+                    round2 = false;
+                    round1 = false;
+                    game = false;
+                }
+            }
+            // Vẽ map nếu người chơi chọn "hard"
             if (round2) {
                 for (int i = 6; i < 14; i++) {
                     map[6][i] = 1;
@@ -182,12 +205,6 @@ int main(int argc, char* argv[]) {
                     map[i][20] = 1;
                 }
             }
-            while (SDL_PollEvent(&event)) {
-                if (event.type == SDL_QUIT) {
-                    round2 = false;
-                    game = false;
-                }
-            }
 
             // Hủy texture score và record score cũ nếu đã tồn tại
             if (scoreTexture) {
@@ -201,11 +218,11 @@ int main(int argc, char* argv[]) {
             string scoreStr = "SCORE: " + to_string(score);
             scoreTexture = graphic.renderText(scoreStr.c_str(), numFont30, colorSpeed);
 
-            // Hiển thị record score
+            // Tạo chuỗi hiển thị record score
             string record = "RECORD SCORE: " + to_string(highScore);
             recordTexture = graphic.renderText(record.c_str(), numFont30, colorSpeed);
 
-            // Game Over hoặc Lập Record Mới
+            // Game Over
             if (snake.gameOver()) {
                 int oldHighScore = loadHighScore(filename);
                 saveHighScore(filename,score);
@@ -245,11 +262,9 @@ int main(int argc, char* argv[]) {
                             gameOverLoop = false;
                         }
                         else if (buttonClicked(x, y, exi)) {
-
                             gameOverLoop = false;
                             round1 = false;
                             round2 = false;
-                            game = false;
                         }
                         break;
                     }
@@ -292,7 +307,6 @@ int main(int argc, char* argv[]) {
         //Lưu điểm
         saveHighScore(filename,highScore);
 
-
         //Destroy mọi thứ
         for (int i = 0; i < MAP_HEIGHT; i++) {
             for (int j = 0; j < MAP_HEIGHT; j++) {
@@ -323,6 +337,12 @@ int main(int argc, char* argv[]) {
         graphic.quitText(&scoreTexture);
 
     } while (game);
+
+    Mix_HaltMusic();  // Dừng phát nhạc
+    Mix_FreeMusic(backgroundMusic); // Giải phóng bộ nhớ
+    backgroundMusic = nullptr;
+    Mix_CloseAudio(); // Đóng SDL_mixer
+
     graphic.quit();
     return 0;
 }
